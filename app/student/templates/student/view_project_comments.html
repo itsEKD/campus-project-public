@@ -1,0 +1,55 @@
+{% extends "base.html" %}
+{% block title %}Project Comments{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+  <h3 class="mb-3">Project: {{ project.title }}</h3>
+
+  <!-- Reaction Section -->
+  <div class="mb-4">
+    <form method="POST" action="{{ url_for('student.react_to_project', project_id=project._id|string) }}">
+      <label class="form-label">React to this project:</label>
+      <div class="btn-group" role="group">
+        <button name="reaction" value="like" class="btn btn-outline-primary {% if user_reacted == 'like' %}active{% endif %}">
+          👍 Like ({{ reaction_counts.like }})
+        </button>
+        <button name="reaction" value="love" class="btn btn-outline-danger {% if user_reacted == 'love' %}active{% endif %}">
+          ❤️ Love ({{ reaction_counts.love }})
+        </button>
+        <button name="reaction" value="clap" class="btn btn-outline-success {% if user_reacted == 'clap' %}active{% endif %}">
+          👏 Clap ({{ reaction_counts.clap }})
+        </button>
+      </div>
+    </form>
+  </div>
+
+  <!-- Comment Form -->
+  <div class="card mb-4">
+    <div class="card-header">Leave a Comment</div>
+    <div class="card-body">
+      <form method="POST">
+        <div class="mb-3">
+          <textarea name="comment" class="form-control" rows="3" required></textarea>
+        </div>
+        <button type="submit" class="btn btn-primary">Submit Comment</button>
+      </form>
+    </div>
+  </div>
+
+  <!-- Display Comments -->
+  <div class="card">
+    <div class="card-header">Comments</div>
+    <ul class="list-group list-group-flush">
+      {% for comment in comments %}
+        <li class="list-group-item">
+          <strong>{{ comment.user_name or comment.user_email }}</strong>
+          <span class="text-muted small float-end">{{ comment.timestamp.strftime('%Y-%m-%d %H:%M') }}</span>
+          <p class="mb-0">{{ comment.comment }}</p>
+        </li>
+      {% else %}
+        <li class="list-group-item text-muted">No comments yet.</li>
+      {% endfor %}
+    </ul>
+  </div>
+</div>
+{% endblock %}

@@ -1,0 +1,37 @@
+{% extends "base.html" %}
+{% block title %}Preview - {{ project.title }}{% endblock %}
+{% block content %}
+
+<a href="{{ url_for('guest.dashboard') }}" class="btn btn-link mb-3"><i class="bi bi-arrow-left"></i> Back to Dashboard</a>
+
+<div class="card shadow">
+  <div class="card-body">
+    <h4 class="card-title">{{ project.title }}</h4>
+    <p class="text-muted small">By {{ project.authors | join(', ') }} | {{ project.year }}</p>
+    <p><strong>Department:</strong> {{ project.department }}</p>
+    <hr>
+    <h6>📄 Abstract:</h6>
+    <p>{{ project.abstract }}</p>
+
+    {% if project.preview_pdf_path %}
+    <h6>📑 Preview (PDF):</h6>
+    <iframe src="{{ url_for('static', filename=project.preview_pdf_path) }}" width="100%" height="400px"></iframe>
+    {% elif project.preview_video_path %}
+    <h6>🎞 Preview (Video):</h6>
+    <video width="100%" controls>
+      <source src="{{ url_for('static', filename=project.preview_video_path) }}" type="video/mp4">
+      Your browser does not support the video tag.
+    </video>
+    {% else %}
+    <div class="alert alert-warning">No preview available.</div>
+    {% endif %}
+
+    <div class="mt-4">
+      <a href="{{ url_for('guest.purchase_project', project_id=project._id) }}" class="btn btn-success">
+        💰 Purchase Full Project
+      </a>
+    </div>
+  </div>
+</div>
+
+{% endblock %}

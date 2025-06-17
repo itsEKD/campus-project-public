@@ -1,0 +1,51 @@
+{% extends "base.html" %}
+{% block title %}Manage Departments{% endblock %}
+
+{% block content %}
+<div class="container mt-5">
+    <h2 class="mb-4">Assign Departments to School</h2>
+
+    {% with messages = get_flashed_messages() %}
+      {% if messages %}
+        <div class="alert alert-info">{{ messages[0] }}</div>
+      {% endif %}
+    {% endwith %}
+
+    <form method="POST" class="p-4 border rounded shadow">
+        <div class="mb-3">
+            <label for="school_id" class="form-label">Select School</label>
+            <select name="school_id" id="school_id" class="form-select" required>
+                <option value="">-- Choose School --</option>
+                {% for school in schools %}
+                  <option value="{{ school._id }}">{{ school.name }}</option>
+                {% endfor %}
+            </select>
+        </div>
+
+        <div class="mb-3">
+            <label for="department" class="form-label">New Department Name</label>
+            <input type="text" name="department" id="department" class="form-control" required>
+        </div>
+
+        <button type="submit" class="btn btn-primary">Add Department</button>
+    </form>
+
+    <hr class="my-4">
+
+    <h5>Current Schools and Departments</h5>
+    <ul class="list-group">
+      {% for school in schools %}
+        <li class="list-group-item">
+            <strong>{{ school.name }}</strong><br>
+            <small>
+              {% if school.departments %}
+                Departments: {{ school.departments | join(', ') }}
+              {% else %}
+                <em>No departments yet.</em>
+              {% endif %}
+            </small>
+        </li>
+      {% endfor %}
+    </ul>
+</div>
+{% endblock %}

@@ -1,0 +1,113 @@
+{% extends "base.html" %}
+{% block title %}Register{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+  <div class="row justify-content-center">
+    <div class="col-md-8 col-lg-6">
+      <div class="card shadow-sm border-0 p-4 bg-white">
+        <h4 class="mb-4 text-center">Create Your Account</h4>
+
+        <!-- Flash messages -->
+        {% with messages = get_flashed_messages() %}
+          {% if messages %}
+            <div class="alert alert-info">{{ messages[0] }}</div>
+          {% endif %}
+        {% endwith %}
+
+        <form method="POST">
+          <!-- Email -->
+          <div class="mb-3">
+            <label for="email" class="form-label">Email Address</label>
+            <input type="email" id="email" name="email" class="form-control" placeholder="e.g. johndoe@example.com" required>
+          </div>
+
+          <!-- Password -->
+          <div class="mb-3">
+            <label for="password" class="form-label">Password</label>
+            <input type="password" name="password" id="password" class="form-control" placeholder="Enter password" required>
+            <div class="form-check mt-2">
+              <input type="checkbox" class="form-check-input" onclick="togglePassword('password')" id="showPassword">
+              <label class="form-check-label" for="showPassword">Show Password</label>
+            </div>
+          </div>
+
+          <!-- Role -->
+          <div class="mb-3">
+            <label for="role" class="form-label">User Role</label>
+            <select name="role" id="role" class="form-select" onchange="handleRoleChange()" required>
+              <option value="">-- Select Role --</option>
+              <option value="student">Student</option>
+              <option value="lecturer">Lecturer</option>
+              <option value="guest">Guest</option>
+            </select>
+          </div>
+
+          <!-- Role ID -->
+          <div class="mb-3">
+            <label for="role_id" class="form-label">Role ID (e.g., Admission No.)</label>
+            <input type="text" name="role_id" id="role_id" class="form-control" placeholder="e.g., ADM001 or LECT123" required>
+          </div>
+
+          <!-- School & Department Section (Student Only) -->
+          <div id="school-department-section" style="display: none;">
+            <div class="mb-3">
+              <label for="school" class="form-label">Select School</label>
+              <select name="school" id="school" class="form-select" onchange="loadDepartments()">
+                <option value="">-- Choose School --</option>
+                {% for school in schools %}
+                  <option value="{{ loop.index0 }}">{{ school.school }}</option>
+                {% endfor %}
+              </select>
+            </div>
+
+            <div class="mb-3">
+              <label for="department" class="form-label">Select Department</label>
+              <select name="department" id="department" class="form-select">
+                <option value="">-- Choose Department --</option>
+              </select>
+            </div>
+          </div>
+
+          <!-- Submit Button -->
+          <div class="d-grid">
+            <button type="submit" class="btn btn-primary">Register</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+  const schools = {{ schools | tojson }};
+
+  function togglePassword(id) {
+    const field = document.getElementById(id);
+    field.type = field.type === "password" ? "text" : "password";
+  }
+
+  function handleRoleChange() {
+    const role = document.getElementById("role").value;
+    const section = document.getElementById("school-department-section");
+    section.style.display = role === "student" ? "block" : "none";
+  }
+
+  function loadDepartments() {
+    const schoolSelect = document.getElementById("school");
+    const deptSelect = document.getElementById("department");
+    deptSelect.innerHTML = '<option value="">-- Choose Department --</option>';
+
+    const selectedIndex = schoolSelect.value;
+    if (selectedIndex !== "") {
+      const departments = schools[selectedIndex].departments || [];
+      departments.forEach(dep => {
+        const option = document.createElement("option");
+        option.value = dep;
+        option.textContent = dep;
+        deptSelect.appendChild(option);
+      });
+    }
+  }
+</script>
+{% endblock %}

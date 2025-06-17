@@ -1,0 +1,49 @@
+{% extends "base.html" %}
+{% block title %}Edit Project{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+  <h3 class="mb-4">Edit Project: {{ project.title }}</h3>
+
+  <form method="POST" enctype="multipart/form-data" class="needs-validation" novalidate>
+    <div class="mb-3">
+      <label for="title" class="form-label">Project Title</label>
+      <input type="text" class="form-control" id="title" name="title"
+             value="{{ project.title }}" required>
+    </div>
+
+    <div class="mb-3">
+      <label for="abstract" class="form-label">Abstract</label>
+      <textarea class="form-control" id="abstract" name="abstract" rows="5" required>{{ project.abstract }}</textarea>
+    </div>
+
+    <div class="mb-3">
+      <label for="project_file" class="form-label">Replace PDF File (optional)</label>
+      <input type="file" class="form-control" id="project_file" name="project_file" accept=".pdf">
+      {% if project.pdf_path %}
+        <small class="text-muted d-block mt-1">
+          Current File: <a href="{{ url_for('static', filename=project.pdf_path.split('static/')[-1]) }}" target="_blank">View PDF</a>
+        </small>
+      {% endif %}
+    </div>
+
+    <div class="mb-3">
+      <label for="demo_video" class="form-label">Replace Demo Video (optional)</label>
+      <input type="file" class="form-control" id="demo_video" name="demo_video" accept="video/*">
+      {% if project.video_path %}
+        <small class="text-muted d-block mt-1">
+          Current Video:
+          <video width="160" height="100" controls class="mt-1 rounded">
+            <source src="{{ url_for('static', filename=project.video_path.split('static/')[-1]) }}">
+          </video>
+        </small>
+      {% endif %}
+    </div>
+
+    <div class="d-flex justify-content-between align-items-center mt-4">
+      <a href="{{ url_for('student.dashboard') }}" class="btn btn-secondary">Cancel</a>
+      <button type="submit" class="btn btn-primary">Update Project</button>
+    </div>
+  </form>
+</div>
+{% endblock %}

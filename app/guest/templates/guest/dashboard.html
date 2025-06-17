@@ -1,0 +1,55 @@
+{% extends "base.html" %}
+{% block title %}Guest Dashboard{% endblock %}
+
+{% block content %}
+<h3 class="mb-4">👋 Welcome, Guest</h3>
+
+<div class="mb-3">
+  <p><strong>Email:</strong> {{ user_email }}</p>
+  <p><strong>Joined on:</strong> {{ user_created or "Unknown" }}</p>
+</div>
+
+<form method="GET" class="row g-3 mb-4">
+  <div class="col-md-4">
+    <input type="text" name="search" class="form-control" placeholder="Search by title..." value="{{ request.args.get('search', '') }}">
+  </div>
+  <div class="col-md-3">
+    <input type="text" name="school" class="form-control" placeholder="Filter by school..." value="{{ request.args.get('school', '') }}">
+  </div>
+  <div class="col-md-3">
+    <input type="text" name="department" class="form-control" placeholder="Filter by department..." value="{{ request.args.get('department', '') }}">
+  </div>
+  <div class="col-md-2">
+    <button class="btn btn-primary w-100">Search</button>
+  </div>
+</form>
+
+{% if project_count == 0 %}
+  <p>No projects found.</p>
+{% else %}
+  <p><strong>{{ project_count }}</strong> project{{ 's' if project_count != 1 else '' }} found.</p>
+{% endif %}
+
+<div class="row">
+  {% for project in projects %}
+  <div class="col-md-4 mb-4">
+    <div class="card h-100 shadow-sm">
+      <div class="card-body">
+        <h5 class="card-title">{{ project.title }}</h5>
+        <p class="text-muted small">
+          By {{ project.authors | join(", ") if project.authors else "Unknown" }}
+        </p>
+        <p>
+          <strong>Department:</strong> {{ project.department or 'N/A' }}<br>
+          <strong>Year:</strong> {{ project.year or 'N/A' }}
+        </p>
+        <p>{{ (project.abstract[:120] ~ '...') if project.abstract else 'No abstract available.' }}</p>
+        <a href="{{ url_for('guest.project_preview', project_id=project._id) }}" class="btn btn-sm btn-outline-primary">
+          🔍 Preview
+        </a>
+      </div>
+    </div>
+  </div>
+  {% endfor %}
+</div>
+{% endblock %}

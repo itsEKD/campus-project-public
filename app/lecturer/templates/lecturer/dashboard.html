@@ -1,0 +1,65 @@
+{% extends "base.html" %}
+{% block title %}Lecturer Dashboard{% endblock %}
+
+{% block content %}
+<h3 class="mb-4">All Student Projects</h3>
+
+{% if projects %}
+<table class="table table-bordered table-hover">
+    <thead class="table-light">
+        <tr>
+            <th>Student</th>
+            <th>Title</th>
+            <th>Department</th>
+            <th>Status</th>
+            <th>Actions</th>
+            <th>PDF</th>
+            <th>Video</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for p in projects %}
+        <tr>
+            <td>{{ p.student_id }}</td>
+            <td>{{ p.title }}</td>
+            <td>{{ p.department }}</td>
+            <td>
+                {% if p.status == 'pending' %}
+                    <span class="badge bg-warning">Pending</span>
+                {% elif p.status == 'approved' %}
+                    <span class="badge bg-success">Approved</span>
+                {% else %}
+                    <span class="badge bg-danger">Rejected</span>
+                {% endif %}
+            </td>
+            <td>
+                <form action="{{ url_for('lecturer.update_project', project_id=p._id) }}" method="POST" class="d-flex flex-column gap-2">
+                    <select name="status" class="form-select">
+                        <option value="pending" {% if p.status == "pending" %}selected{% endif %}>Pending</option>
+                        <option value="approved" {% if p.status == "approved" %}selected{% endif %}>Approve</option>
+                        <option value="rejected" {% if p.status == "rejected" %}selected{% endif %}>Reject</option>
+                    </select>
+                    <input type="text" name="grade" value="{{ p.grade or '' }}" class="form-control" placeholder="Grade">
+                    <textarea name="comment" class="form-control" rows="2" placeholder="Lecturer comment">{{ p.lecturer_comment }}</textarea>
+                    <button class="btn btn-primary btn-sm" type="submit">Update</button>
+                </form>
+            </td>
+            <td>
+                <a href="{{ url_for('static', filename=p.file_path) }}" target="_blank" class="btn btn-sm btn-outline-primary">View PDF</a>
+            </td>
+            <td>
+                {% if p.video_path %}
+                <video width="150" height="100" controls>
+                    <source src="{{ url_for('static', filename=p.video_path) }}" type="video/mp4">
+                    Your browser does not support video.
+                </video>
+                {% else %} - {% endif %}
+            </td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+{% else %}
+<p>No projects uploaded yet.</p>
+{% endif %}
+{% endblock %}

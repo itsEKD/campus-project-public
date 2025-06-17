@@ -1,0 +1,156 @@
+{% extends "base.html" %}
+{% block title %}Student Dashboard{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+  <div class="d-flex justify-content-between align-items-center mb-4">
+    <h3>Your Submitted Projects</h3>
+    <a href="{{ url_for('student.upload_project') }}" class="btn btn-success">+ Upload New Project</a>
+  </div>
+
+  {% if projects %}
+  <div class="table-responsive">
+    <table class="table table-bordered table-hover align-middle text-center">
+      <thead class="table-light">
+        <tr>
+          <th>Title</th>
+          <th>Type</th>
+          <th>Team Members</th>
+          <th>Department</th>
+          <th>Status</th>
+          <th>Grade</th>
+          <th>Feedback</th>
+          <th>PDF</th>
+          <th>Demo Video</th>
+          <th>Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for project in projects %}
+        <tr>
+          <td>{{ project.title }}</td>
+          <td>
+            {% if project.is_team_project %}
+              <span class="badge bg-info text-dark">Team</span>
+            {% else %}
+              <span class="badge bg-secondary">Individual</span>
+            {% endif %}
+          </td>
+          <td>
+            {% if project.is_team_project %}
+              <ul class="list-unstyled small">
+                {% for email in project.team_members %}
+                  <li><i class="bi bi-person-fill"></i> {{ email }}</li>
+                {% endfor %}
+              </ul>
+            {% else %}
+              <i class="bi bi-person-fill"></i> {{ project.student_email }}
+            {% endif %}
+          </td>
+          <td>{{ project.department }}</td>
+          <td>
+            {% if project.status == 'pending' %}
+              <span class="badge bg-warning text-dark">Pending</span>
+            {% elif project.status == 'approved' %}
+              <span class="badge bg-success">Approved</span>
+            {% elif project.status == 'rejected' %}
+              <span class="badge bg-danger">Rejected</span>
+            {% else %}
+              <span class="badge bg-secondary">{{ project.status }}</span>
+            {% endif %}
+          </td>
+          <td>{{ project.grade or "-" }}</td>
+          <td>{{ project.lecturer_comment or "-" }}</td>
+          <td>
+            {% if project.pdf_path %}
+              <div class="d-flex flex-column gap-1">
+                <a class="btn btn-sm btn-outline-primary"
+                   href="{{ url_for('static', filename=project.pdf_path.split('static/')[-1]) }}"
+                   target="_blank">View</a>
+                <a class="btn btn-sm btn-outline-secondary"
+                   href="{{ url_for('static', filename=project.pdf_path.split('static/')[-1]) }}"
+                   download>Download</a>
+              </div>
+            {% else %}
+              -
+            {% endif %}
+          </td>
+          <td>
+            {% if project.video_path %}
+              <video width="140" height="80" controls class="rounded border">
+                <source src="{{ url_for('static', filename=project.video_path.split('static/')[-1]) }}">
+              </video>
+            {% else %}
+              -
+            {% endif %}
+          </td>
+          <td>
+            {% if project.status != 'approved' %}
+              <div class="btn-group">
+                <a href="{{ url_for('student.edit_project', project_id=project._id|string) }}"
+                  class="btn btn-sm btn-outline-info">Edit</a>
+
+                {% if not project.is_team_project or project.leader_email == current_user.email %}
+                <!-- Only team leader or individual can delete -->
+                <button class="btn btn-sm btn-outline-danger"
+                        data-bs-toggle="modal"
+                        data-bs-target="#confirmDelete{{ project._id|string }}">Delete</button>
+                {% endif %}
+              </div>
+
+              {% if not project.is_team_project or project.leader_email == current_user.email %}
+              <!-- Delete Confirmation Modal -->
+              <div class="modal fade" id="confirmDelete{{ project._id|string }}" tabindex="-1"
+                  aria-labelledby="confirmDeleteLabel{{ project._id|string }}" aria-hidden="true">
+                <div class="modal-dialog modal-dialog-centered">
+                  <div class="modal-content">
+                    <div class="modal-header bg-danger text-white">
+                      <h5 class="modal-title" id="confirmDeleteLabel{{ project._id|string }}">Confirm Delete</h5>
+                      <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body text-start">
+                      Are you sure you want to delete the project <strong>"{{ project.title }}"</strong>?
+                    </div>
+                    <div class="modal-footer">
+                      <form method="POST" action="{{ url_for('student.delete_project', project_id=project._id|string) }}">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                        <button type="submit" class="btn btn-danger">Yes, Delete</button>
+                      </form>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              {% endif %}
+            {% else %}
+              <span class="text-muted">Locked (Approved)</span>
+            {% endif %}
+
+            <!-- Comment/React Button -->
+            <a href="{{ url_for('student.view_project_comments', project_id=project._id|string) }}" class="btn btn-sm btn-outline-secondary mt-1">Comments</a>
+
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+     {% for project in projects %}
+<tr>
+  <td>{{ project.title }}</td>
+  <!-- ... other columns ... -->
+  <td>
+    <!-- Comment button (no error) -->
+    <a href="{{ url_for('student.view_project_comments', project_id=project._id|string) }}"
+       class="btn btn-sm btn-outline-secondary">💬 Comment</a>
+  </td>
+</tr>
+{% endfor %}
+
+  </div>
+  {% else %}
+    <div class="alert alert-info">
+      <p>You have not submitted any projects yet.</p>
+      <a href="{{ url_for('student.upload_project') }}" class="btn btn-primary mt-2">Upload a Project</a>
+    </div>
+  {% endif %}
+</div>
+{% endblock %}

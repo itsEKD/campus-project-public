@@ -1,0 +1,11 @@
+
+Campus Project Purchase Receipt
+
+Project: {{ project.title }}
+Department: {{ project.department }}
+Authors: {{ project.authors | join(", ") }}
+Amount Paid: KES {{ amount }}
+
+You can now access the full project from your dashboard.
+
+~ CampusProject Team

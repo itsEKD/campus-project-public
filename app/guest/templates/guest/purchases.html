@@ -1,0 +1,39 @@
+{% extends "base.html" %}
+{% block title %}My Purchased Projects{% endblock %}
+{% block content %}
+
+<h3>📥 My Purchases</h3>
+
+{% if projects.count() == 0 %}
+  <div class="alert alert-warning">
+    You haven't purchased any projects yet.
+  </div>
+{% endif %}
+
+<div class="row">
+  {% for project in projects %}
+  <div class="col-md-6 mb-4">
+    <div class="card shadow-sm">
+      <div class="card-body">
+        <h5 class="card-title">{{ project.title }}</h5>
+        <p class="text-muted">By {{ project.authors | join(", ") }}</p>
+        <p><strong>Department:</strong> {{ project.department }}<br>
+           <strong>Year:</strong> {{ project.year }}</p>
+        <hr>
+        {% if project.full_pdf_path %}
+          <a href="{{ url_for('static', filename=project.full_pdf_path) }}" class="btn btn-outline-primary" target="_blank">
+            📄 Download PDF
+          </a>
+        {% endif %}
+        {% if project.full_video_path %}
+          <a href="{{ url_for('static', filename=project.full_video_path) }}" class="btn btn-outline-secondary mt-2" target="_blank">
+            🎥 Watch Video
+          </a>
+        {% endif %}
+      </div>
+    </div>
+  </div>
+  {% endfor %}
+</div>
+
+{% endblock %}

@@ -1,0 +1,13 @@
+<h2>🎓 Campus Project Purchase Receipt</h2>
+<p>Dear Guest,</p>
+<p>Thank you for your purchase. Here are the details:</p>
+
+<ul>
+  <li><strong>Project:</strong> {{ project.title }}</li>
+  <li><strong>Department:</strong> {{ project.department }}</li>
+  <li><strong>Authors:</strong> {{ project.authors | join(", ") }}</li>
+  <li><strong>Amount Paid:</strong> KES {{ amount }}</li>
+</ul>
+
+<p>You can now access the full project from your dashboard.</p>
+<p>~ CampusProject Team</p>

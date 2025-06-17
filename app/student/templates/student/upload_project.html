@@ -1,0 +1,91 @@
+{% extends "base.html" %}
+{% block title %}Upload Project{% endblock %}
+
+{% block content %}
+<div class="card p-4 shadow-sm">
+    <h4 class="mb-3">Upload Project</h4>
+
+    {% with messages = get_flashed_messages() %}
+      {% if messages %}
+        <div class="alert alert-info">{{ messages[0] }}</div>
+      {% endif %}
+    {% endwith %}
+
+    <form method="POST" enctype="multipart/form-data">
+        <div class="mb-3">
+            <label class="form-label">Project Title</label>
+            <input type="text" class="form-control" name="title" required>
+        </div>
+
+        <div class="mb-3">
+            <label class="form-label">Department</label>
+            <input type="text" class="form-control" name="department" value="{{ student.department }}" readonly>
+        </div>
+
+        <div class="mb-3">
+            <label class="form-label">Abstract</label>
+            <textarea class="form-control" name="abstract" rows="4" required></textarea>
+        </div>
+
+        <!-- Team Project Toggle -->
+        <div class="form-check form-switch mb-3">
+            <input class="form-check-input" type="checkbox" id="is_team_project" name="is_team_project">
+            <label class="form-check-label" for="is_team_project">Is this a team project?</label>
+        </div>
+
+        <!-- Team Member Inputs -->
+        <div id="team-member-inputs" style="display: none;">
+            <label class="form-label">Invite up to 4 team members (by email):</label>
+            {% for i in range(4) %}
+            <input type="email" name="member_emails" class="form-control mb-2" placeholder="Team Member {{ i+1 }} Email">
+            {% endfor %}
+        </div>
+
+        <div class="mb-3">
+            <label class="form-label">Upload PDF</label>
+            <input class="form-control" type="file" name="project_file" accept=".pdf" required>
+        </div>
+
+        <div class="mb-3">
+            <label class="form-label">Upload Demo Video (optional)</label>
+            <input class="form-control" type="file" name="demo_video" accept="video/mp4,video/webm" onchange="previewVideo(this)">
+        </div>
+
+        <div class="mb-3" id="video-preview-container" style="display: none;">
+            <label class="form-label">Video Preview</label>
+            <video id="video-preview" class="w-100" controls></video>
+        </div>
+
+        <div class="mb-3">
+            <label class="form-label">Project Price (KES)</label>
+            <input type="number" name="price" class="form-control" min="0" placeholder="Enter price (e.g., 200)" required>
+        </div>
+
+        <button type="submit" class="btn btn-primary">Submit Project</button>
+    </form>
+</div>
+
+<script>
+    const toggle = document.getElementById("is_team_project");
+    const teamInputs = document.getElementById("team-member-inputs");
+
+    toggle.addEventListener("change", () => {
+        teamInputs.style.display = toggle.checked ? "block" : "none";
+    });
+
+    function previewVideo(input) {
+        const file = input.files[0];
+        const previewContainer = document.getElementById("video-preview-container");
+        const video = document.getElementById("video-preview");
+
+        if (file) {
+            const url = URL.createObjectURL(file);
+            video.src = url;
+            previewContainer.style.display = "block";
+        } else {
+            video.src = "";
+            previewContainer.style.display = "none";
+        }
+    }
+</script>
+{% endblock %}
