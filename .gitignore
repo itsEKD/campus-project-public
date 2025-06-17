@@ -1,0 +1,23 @@
+# Ignore Python cache and compiled files
+__pycache__/
+*.pyc
+
+# Virtual environment
+venv/
+ENV/
+env/
+
+# Environment variables
+.env
+
+# Flask instance folder (optional)
+instance/
+
+# SQLite and log files
+*.db
+*.sqlite3
+*.log
+
+# IDE settings (optional)
+.vscode/
+.idea/
