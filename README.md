@@ -170,6 +170,8 @@ campus_proj_app/
 ```
 
 ---
+📁 Copy `.env.example` to `.env` and fill in your own credentials before running.
+
 
 ## 💬 Contact & Contribution
 
